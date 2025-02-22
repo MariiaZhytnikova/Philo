@@ -6,7 +6,7 @@
 #    By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/04 15:05:17 by mzhitnik          #+#    #+#              #
-#    Updated: 2025/02/22 11:45:45 by mzhitnik         ###   ########.fr        #
+#    Updated: 2025/02/22 12:20:11 by mzhitnik         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME		:= philo
 # NAME_B		:= so_long_bonus
 
 CC = cc
-CFLAGS		:= -Wextra -Wall -Werror
+CFLAGS		:= #-Wextra -Wall -Werror
 
 HEADERS		:= -I ./inc
 
@@ -27,7 +27,8 @@ SRCS := $(SRCS_PATH)/main.c \
 		$(SRCS_PATH)/error.c \
 		$(SRCS_PATH)/libft_utils.c \
 		$(SRCS_PATH)/parce_args.c \
-		$(SRCS_PATH)/init.c
+		$(SRCS_PATH)/init.c \
+		$(SRCS_PATH)/simulation.c
 
 # SRCS_B := $(SRCS_B_PATH)/main_bonus.c \
 # 		$(SRCS_B_PATH)/map_val_bonus.c \

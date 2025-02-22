@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 11:08:45 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:37:13 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@ _sleep [number_of_times_each_philosopher_must_eat]"
 
 typedef struct s_fork
 {
-	pthread_mutex_t	fork_mut;
+	pthread_mutex_t	fork_lock;
 	int				fork_id;
 }	t_fork;
+
+typedef struct s_data	t_data;
 
 typedef struct s_philo
 {
@@ -39,7 +41,7 @@ typedef struct s_philo
 	size_t			time_last_meal;
 	bool			is_dead;
 	bool			is_fool;
-	pthread_mutex_t	*philo_lock;
+	pthread_mutex_t	philo_lock;
 	t_data			*data;
 }	t_philo;
 
@@ -54,8 +56,8 @@ typedef struct s_data
 	t_philo			*philos;
 	t_fork			*forks;
 	pthread_t		observer;
-	pthread_mutex_t	*data_lock;
-	pthread_mutex_t	*print_lock;
+	pthread_mutex_t	data_lock;
+	pthread_mutex_t	print_lock;
 }	t_data;
 
 
@@ -76,6 +78,8 @@ int		parce_args(t_data *data, int argc, char **argv);
 
 //Threads
 void	data_init(t_data *data);
+void	simulation_start(t_data *data);
 // void	observer_init(t_data *data);
 
 #endif
+

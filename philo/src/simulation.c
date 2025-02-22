@@ -6,14 +6,11 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 11:45:57 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:06:22 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-
-
 
 size_t	get_current_time(void)
 {
@@ -52,7 +49,22 @@ void	*routine(void *param)
 	return (NULL);
 }
 
-simulation_start(t_data *data)
+void	simulation_start(t_data *data)
 {
+	int	i;
 	
+	i = 1;
+	while (i <= data->ph_num)
+	{
+		if(pthread_create(&data->philos[i].thread, NULL, routine, &data->philos[i]) != 0)
+			return (error_msg("Philo thread creation failed\n"));
+		i++;
+	}
+	i = 1;
+	{
+		if (pthread_join(data->philos[i].thread, NULL) != 0)
+			return (error_msg("Thread join failed\n"));
+		i++;
+	}
 }
+

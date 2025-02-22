@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 11:17:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 11:41:07 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:37:21 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,18 @@
 
 static void	assign_forks(t_philo *philo)
 {
+	int	ph_num;
+
+	ph_num =  philo->data->ph_num;
 	if (philo->id % 2 == 0)
 	{
-		philo->fork_one = &philo->data->forks[philo->id];
-		philo->fork_two = &philo->data->forks[(philo->id + 1) / philo->data->ph_num];
+		philo->fork_one = &philo->data->forks[philo->id - 1];
+		philo->fork_two = &philo->data->forks[(philo->id) % ph_num];
 	}
 	else
 	{
-		philo->fork_one = &philo->data->forks[(philo->id + 1) / philo->data->ph_num];
-		philo->fork_two = &philo->data->forks[philo->id];
+		philo->fork_one = &philo->data->forks[(philo->id) % ph_num];
+		philo->fork_two = &philo->data->forks[philo->id - 1];
 	}
 }
 
@@ -30,11 +33,11 @@ static void	forks_init(t_data *data)
 {
 	int	i;
 	
-	i = 1;
-	while (i <= data->ph_num)
+	i = 0;
+	while (i < data->ph_num)
 	{
-		data->forks[i].fork_id = i;
-		if(pthread_mutex_init(&data->forks[i].fork_mut, NULL) != 0)
+		data->forks[i].fork_id = i + 1;
+		if(pthread_mutex_init(&data->forks[i].fork_lock, NULL) != 0)
 			return (error_msg("Fork mutex initialization failed\n"));
 		i++;
 	}
@@ -44,10 +47,10 @@ static void	philo_init(t_data *data)
 {
 	int	i;
 	
-	i = 1;
-	while (i <= data->ph_num)
+	i = 0;
+	while (i < data->ph_num)
 	{
-		data->philos[i].id = i;
+		data->philos[i].id = i + 1;
 		data->philos[i].data = data;
 		assign_forks(&data->philos[i]);
 		if(pthread_mutex_init(&data->philos[i].philo_lock, NULL) != 0)

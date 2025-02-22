@@ -6,14 +6,14 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:54:55 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 10:32:37 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:04:13 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <limits.h>
 
-int	mini_atoi(const char *str)
+static int	mini_atoi(const char *str)
 {
 	size_t	i;
 	size_t	num;
@@ -34,7 +34,7 @@ int	mini_atoi(const char *str)
 	return ((int)num);
 }
 
-void	data_init(t_data *data, char **array)
+static void	times_init(t_data *data, char **array)
 {
 	data->ph_num = mini_atoi(array[0]);
 	data->time_die = mini_atoi(array[1]);
@@ -44,7 +44,7 @@ void	data_init(t_data *data, char **array)
 		data->meals_num = mini_atoi(array[4]);
 }
 
-int	args_check(char **array)
+static int	args_check(char **array)
 {
 	int	i;
 	int	j;
@@ -68,7 +68,7 @@ int	args_check(char **array)
 	return(0);
 }
 
-char *get_args(char **argv)
+static char *get_args(char **argv)
 {
 	int		i;
 	char	*str;
@@ -105,7 +105,7 @@ int	parce_args(t_data *data, int argc, char **argv)
 	free(str);
 	if (args_check(array))
 		return (free_arr(array), error_msg("Wrong arguments"), 1);
-	data_init(data, array);
+	times_init(data, array);
 	free_arr(array);
 	if (data->ph_num < 1 || data->time_die < 1 || data->time_eat < 1
 		|| data->time_sleep < 1|| data->meals_num < 0)

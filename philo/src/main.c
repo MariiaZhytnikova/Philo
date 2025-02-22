@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 11:44:19 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:37:36 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,19 @@
 int	main(int argc, char **argv)
 {
 	t_data	*data;
-	int		i;
 	
 	data = (t_data *)ft_calloc(1, sizeof(t_data));
 	if (parce_args(data, argc, argv))
 		return (free(data), 1);
 	// printf("number_of_philosophers is                    %d\n", data->ph_num);
-	// printf("time_to_die is                               %d\n", data->time_die);
-	// printf("time_to_eat is                               %d\n", data->time_eat);
-	// printf("time_to_sleep is                             %d\n", data->time_sleep);
+	// printf("time_to_die is                               %zu\n", data->time_die);
+	// printf("time_to_eat is                               %zu\n", data->time_eat);
+	// printf("time_to_sleep is                             %zu\n", data->time_sleep);
 	// printf("number_of_times_each_philosopher_must_eat is %d\n", data->meals_num);
-	// printf("All done!\n");
+
 	data_init(data);
 	simulation_start(data);
-	
+	printf("All done!\n");
 	//Need to clean up
 	free(data);
 	return (0);
