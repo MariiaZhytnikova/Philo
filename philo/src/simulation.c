@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/22 12:06:22 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/23 20:09:33 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t	get_current_time(void)
 	struct timeval	time;
 
 	if (gettimeofday(&time, NULL) == -1)
-		write(2, "gettimeofday() error\n", 22);
+		error_msg("gettimeofday() error");
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
@@ -27,44 +27,66 @@ int	ft_usleep(size_t milliseconds)
 
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
-		usleep(500);
+		usleep(100);
 	return (0);
 }
 
-
-
-void	*routine(void *param)
+void	*monitoring(void *param)
 {
-	t_philo	*philo;
+	t_data	*data;
+	size_t	elapse;
+	int		i;
 
-	philo = (t_philo *)param;
-
-	printf("%zu %d is thinking\n", get_current_time(), philo->id);
-	ft_usleep(10);
-	printf("%zu %d is eating\n", get_current_time(), philo->id);
-	ft_usleep(10);
-	printf("%zu %d is sleeping\n", get_current_time(), philo->id);
-	ft_usleep(10);
-
+	data = (t_data *)param;
+	i = 0;
+	while (data->is_dead == false)
+	{
+		i = 0;
+		while (i < data->ph_num)
+		{
+			elapse = get_current_time() - data->philos[i].time_last_meal;
+			//printf("-----> %d last meal was %zu ms ago\n", data->philos[i].id, elapse);
+			if(elapse >= data->time_die)
+			{
+				write_msg(" died\n", &data->philos[i]);
+				data->is_dead = true;
+				return (NULL);
+			}
+			// chech if all eat not only one
+			// dead lock if even number of philos
+			if (data->meals_num != -1 && data->philos[i].meals_eaten > data->meals_num) //  If all philosophers have eaten at least
+			{
+				//printf("----------------> meals is %d eaten is %d\n", data->meals_num, data->philos[i].meals_eaten);
+				data->is_dead = true;
+				return (NULL);
+			}
+			i++;
+		}
+		ft_usleep(50);
+	}
 	return (NULL);
 }
 
 void	simulation_start(t_data *data)
 {
 	int	i;
-	
-	i = 1;
-	while (i <= data->ph_num)
+
+	i = 0;
+	while (i < data->ph_num)
 	{
 		if(pthread_create(&data->philos[i].thread, NULL, routine, &data->philos[i]) != 0)
 			return (error_msg("Philo thread creation failed\n"));
 		i++;
 	}
-	i = 1;
+	if(pthread_create(&data->observer, NULL, monitoring, data) != 0)
+		return (error_msg("Observer thread creation failed\n"));
+	i = 0;
+	while (i < data->ph_num)
 	{
 		if (pthread_join(data->philos[i].thread, NULL) != 0)
 			return (error_msg("Thread join failed\n"));
 		i++;
 	}
+	if (pthread_join(data->observer, NULL) != 0)
+		error_msg("Observer thread join failed\n");
 }
-

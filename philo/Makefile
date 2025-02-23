@@ -6,7 +6,7 @@
 #    By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/04 15:05:17 by mzhitnik          #+#    #+#              #
-#    Updated: 2025/02/22 12:20:11 by mzhitnik         ###   ########.fr        #
+#    Updated: 2025/02/23 12:37:18 by mzhitnik         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,11 +24,11 @@ OBJS_PATH	:= ./obj
 # OBJS_B_PATH	:= ./obj_bonus
 
 SRCS := $(SRCS_PATH)/main.c \
-		$(SRCS_PATH)/error.c \
-		$(SRCS_PATH)/libft_utils.c \
+		$(SRCS_PATH)/utils.c \
 		$(SRCS_PATH)/parce_args.c \
 		$(SRCS_PATH)/init.c \
-		$(SRCS_PATH)/simulation.c
+		$(SRCS_PATH)/simulation.c \
+		$(SRCS_PATH)/routine.c
 
 # SRCS_B := $(SRCS_B_PATH)/main_bonus.c \
 # 		$(SRCS_B_PATH)/map_val_bonus.c \

@@ -1,16 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_utils.c                                      :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/16 13:29:18 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/16 17:48:09 by mzhitnik         ###   ########.fr       */
+/*   Created: 2025/02/16 13:52:01 by mzhitnik          #+#    #+#             */
+/*   Updated: 2025/02/23 18:46:17 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
+
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
 
 void	*ft_calloc(size_t num, size_t size)
 {
@@ -63,17 +76,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (res);
 }
 
-void	ft_putendl_fd(char *str, int fd)
-{
-	size_t	counter;
-
-	counter = 0;
-	while (str[counter++] != '\0');
-	write(fd, str, counter);
-	write(fd, "\n", 1);
-}
-
-size_t	ft_word_count(char *str)
+size_t	word_count(char *str)
 {
 	size_t	count;
 	size_t	in_word;
