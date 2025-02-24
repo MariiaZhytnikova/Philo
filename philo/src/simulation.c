@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/23 20:09:33 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/24 11:17:16 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,21 @@ int	ft_usleep(size_t milliseconds)
 	return (0);
 }
 
+int	meals_eaten(t_data *data)
+{
+	int		i;
+	
+
+	i = 0;
+	while (i < data->ph_num)
+	{
+		if (data->philos[i].meals_eaten < data->meals_num)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 void	*monitoring(void *param)
 {
 	t_data	*data;
@@ -52,11 +67,9 @@ void	*monitoring(void *param)
 				data->is_dead = true;
 				return (NULL);
 			}
-			// chech if all eat not only one
 			// dead lock if even number of philos
-			if (data->meals_num != -1 && data->philos[i].meals_eaten > data->meals_num) //  If all philosophers have eaten at least
+			if (data->meals_num != -1 && !meals_eaten(data))
 			{
-				//printf("----------------> meals is %d eaten is %d\n", data->meals_num, data->philos[i].meals_eaten);
 				data->is_dead = true;
 				return (NULL);
 			}
