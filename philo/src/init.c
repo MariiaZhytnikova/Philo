@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 11:17:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/24 17:57:39 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/05 10:18:54 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,6 @@ static void	philo_init(t_data *data)
 		data->philos[i].time_last_meal = get_current_time();
 		data->philos[i].data = data;
 		assign_forks(&data->philos[i]);
-		if (pthread_mutex_init(&data->philos[i].philo_lock, NULL) != 0)
-			return (error_msg("Philo mutex initialization failed\n"));
 		i++;
 	}
 }
@@ -72,6 +70,8 @@ void	data_init(t_data *data)
 	forks_init(data);
 	philo_init(data);
 	if (pthread_mutex_init(&data->print_lock, NULL) != 0)
+		return (error_msg("Write mutex initialization failed\n"));
+	if (pthread_mutex_init(&data->dead_lock, NULL) != 0)
 		return (error_msg("Write mutex initialization failed\n"));
 }
 

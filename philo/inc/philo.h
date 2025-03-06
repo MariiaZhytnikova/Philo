@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/25 10:38:12 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/05 10:18:46 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ typedef struct s_philo
 	int				meals_eaten;
 	size_t			time_last_meal;
 	bool			is_fool;
-	pthread_mutex_t	philo_lock;
 	t_data			*data;
 }	t_philo;
 
@@ -56,6 +55,7 @@ typedef struct s_data
 	t_fork			*forks;
 	bool			is_dead;
 	pthread_t		observer;
+	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	print_lock;
 }	t_data;
 
@@ -73,6 +73,8 @@ void	free_arr(char **arr);
 int		parce_args(t_data *data, char **argv);
 
 // Simulation utls
+int		checker(t_data *data);
+void	long_dream(t_philo *philo, int action);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
 
