@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/23 18:46:11 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/25 10:38:12 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ typedef struct s_data
 	pthread_mutex_t	print_lock;
 }	t_data;
 
-
 // Utils
 void	*ft_calloc(size_t num, size_t size);
 char	*ft_strjoin(char *s1, char *s2);
@@ -70,17 +69,18 @@ void	split_args(char **res, char *args, int k);
 void	error_msg(char *msg);
 void	free_arr(char **arr);
 
-
 // Parce args
-int		parce_args(t_data *data, int argc, char **argv);
+int		parce_args(t_data *data, char **argv);
 
 // Simulation utls
 size_t	get_current_time(void);
-int	ft_usleep(size_t milliseconds);
+void	ft_usleep(size_t milliseconds);
 
 //Threads
 void	data_init(t_data *data);
 void	write_msg(char *msg, t_philo *philo);
+void	release_forks(t_philo *philo);
+void	*monitoring(void *param);
 void	*routine(void *param);
 void	simulation_start(t_data *data);
 

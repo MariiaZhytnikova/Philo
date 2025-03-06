@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:54:55 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/23 18:51:04 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/24 13:28:39 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 
 static int	mini_atoi(const char *str)
 {
-	size_t	i;
-	size_t	num;
+	size_t		i;
+	long long	num;
+	int			j;
 
 	if (!str)
 		return (0);
@@ -24,15 +25,13 @@ static int	mini_atoi(const char *str)
 	i = 0;
 	if (str[i] == '+')
 		i++;
-	while (str[i])
+	j = i;
+	while (str[j])
 	{
-		if (!(str[i] >= '0' && str[i] <= '9'))
+		if (!(str[j] >= '0' && str[j] <= '9'))
 			return (-1);
-		i++;
+		j++;
 	}
-	i = 0;
-	if (str[i] == '+')
-		i++;
 	while (str[i] >= '0' && str[i] <= '9')
 		num = num * 10 + (str[i++] - '0');
 	if (num > INT_MAX)
@@ -52,7 +51,7 @@ static void	get_numbers(t_data *data, char **array)
 	}
 }
 
-static char *get_args(char **argv)
+static char	*get_args(char **argv)
 {
 	int		i;
 	char	*str;
@@ -69,16 +68,26 @@ static char *get_args(char **argv)
 		free(str);
 		str = temp;
 	}
+	i = 0;
+	while (str[i])
+	{
+		if (!(str[i] >= '0' && str[i] <= '9') && str[i] != ' '
+			&& str[i] != '+')
+			return (free(str), NULL);
+		i++;
+	}
 	return (str);
 }
 
-int	parce_args(t_data *data, int argc, char **argv)
+int	parce_args(t_data *data, char **argv)
 {
 	char	*str;
 	char	**array;
 	int		args_num;
 
 	str = get_args(argv);
+	if (!str)
+		return (error_msg(USAGE), 1);
 	args_num = word_count(str);
 	if (args_num != 4 && args_num != 5)
 		return (error_msg(USAGE), 1);

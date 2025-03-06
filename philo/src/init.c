@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 11:17:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/23 17:16:40 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/02/24 17:57:39 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	assign_forks(t_philo *philo)
 {
 	int	ph_num;
 
-	ph_num =  philo->data->ph_num;
+	ph_num = philo->data->ph_num;
 	if (philo->id % 2 == 0)
 	{
 		philo->fork_one = &philo->data->forks[philo->id - 1];
@@ -32,12 +32,12 @@ static void	assign_forks(t_philo *philo)
 static void	forks_init(t_data *data)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < data->ph_num)
 	{
 		data->forks[i].fork_id = i + 1;
-		if(pthread_mutex_init(&data->forks[i].fork_lock, NULL) != 0)
+		if (pthread_mutex_init(&data->forks[i].fork_lock, NULL) != 0)
 			return (error_msg("Fork mutex initialization failed\n"));
 		i++;
 	}
@@ -54,7 +54,7 @@ static void	philo_init(t_data *data)
 		data->philos[i].time_last_meal = get_current_time();
 		data->philos[i].data = data;
 		assign_forks(&data->philos[i]);
-		if(pthread_mutex_init(&data->philos[i].philo_lock, NULL) != 0)
+		if (pthread_mutex_init(&data->philos[i].philo_lock, NULL) != 0)
 			return (error_msg("Philo mutex initialization failed\n"));
 		i++;
 	}
@@ -71,8 +71,31 @@ void	data_init(t_data *data)
 		return (error_msg("Forks array allocation failed\n"));
 	forks_init(data);
 	philo_init(data);
-	// if(pthread_mutex_init(&data->death_lock, NULL) != 0)
-	// 		return (error_msg("Death mutex initialization failed\n"));
-	if(pthread_mutex_init(&data->print_lock, NULL) != 0)
-			return (error_msg("Write mutex initialization failed\n"));
+	if (pthread_mutex_init(&data->print_lock, NULL) != 0)
+		return (error_msg("Write mutex initialization failed\n"));
+}
+
+void	simulation_start(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->ph_num)
+	{
+		if (pthread_create(&data->philos[i].thread, NULL, routine, \
+			&data->philos[i]) != 0)
+			return (error_msg("Philo thread creation failed\n"));
+		i++;
+	}
+	i = 0;
+	if (pthread_create(&data->observer, NULL, monitoring, data) != 0)
+		return (error_msg("Observer thread creation failed\n"));
+	while (i < data->ph_num)
+	{
+		if (pthread_join(data->philos[i].thread, NULL) != 0)
+			return (error_msg("Thread join failed\n"));
+		i++;
+	}
+	if (pthread_join(data->observer, NULL) != 0)
+		error_msg("Observer thread join failed\n");
 }
