@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/06 10:27:03 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/05 16:54:38 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 void	error_msg(char *msg)
 {
@@ -26,28 +26,30 @@ void	error_msg(char *msg)
 
 void	destroy(t_data *data)
 {
-	int	i;
-
-	i = 0;
-	pthread_mutex_destroy(&data->print_lock);
-	pthread_mutex_destroy(&data->dead_lock);
-	while (i < data->ph_num)
-	{
-		pthread_mutex_destroy(&data->forks[i].fork_lock);
-		i++;
-	}
-	free(data->forks);
+	if (sem_close(data->forks))
+		error_msg("Semaphores close failed");
+	if (sem_close(data->print_lock))
+		error_msg("Semaphores close failed");
+	if (sem_close(data->dead_lock))
+		error_msg("Semaphores close failed");
+	if (sem_unlink("/forks") == -1)
+		error_msg("Semaphores unlink failed");
+	if (sem_unlink("/print") == -1)
+		error_msg("Semaphores unlink failed");
+	if (sem_unlink("/dead") == -1)
+		error_msg("Semaphores unlink failed");
 	free(data->philos);
 	free(data);
+	printf("     Cleaning done \n");
 	printf("       ¯\\_(ツ)_/¯\n");
+	exit(0);
 }
 
 int	main(int argc, char **argv)
 {
 	t_data	*data;
 
-	if (argc < 2)
-		return (error_msg(USAGE), 0);
+	(void)argc;
 	data = (t_data *)ft_calloc(1, sizeof(t_data));
 	if (!data)
 		return (0);
@@ -63,7 +65,6 @@ int	main(int argc, char **argv)
 		return (free(data), 0);
 	}
 	data_init(data);
-	simulation_start(data);
-	destroy(data);
+	simulation(data);
 	return (0);
 }

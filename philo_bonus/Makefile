@@ -6,27 +6,26 @@
 #    By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/04 15:05:17 by mzhitnik          #+#    #+#              #
-#    Updated: 2025/03/05 11:10:55 by mzhitnik         ###   ########.fr        #
+#    Updated: 2025/03/05 11:43:50 by mzhitnik         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		:= philo
+NAME		:= philo_bonus
 
 CC = cc
-CFLAGS		:= -pthread -Wextra -Wall -Werror
+CFLAGS		:= -Wextra -Wall -Werror
 
 HEADERS		:= -I ./inc
 
 SRCS_PATH	:= ./src
 OBJS_PATH	:= ./obj
 
-SRCS := $(SRCS_PATH)/main.c \
-		$(SRCS_PATH)/utils.c \
-		$(SRCS_PATH)/parse_args.c \
-		$(SRCS_PATH)/init.c \
-		$(SRCS_PATH)/simulation.c \
-		$(SRCS_PATH)/sim_utils.c \
-		$(SRCS_PATH)/routine.c
+SRCS := $(SRCS_PATH)/main_bonus.c \
+		$(SRCS_PATH)/utils_bonus.c \
+		$(SRCS_PATH)/parce_args_bonus.c \
+		$(SRCS_PATH)/sim_utils_bonus.c \
+		$(SRCS_PATH)/simulation_bonus.c \
+		$(SRCS_PATH)/routine_bonus.c
 
 OBJS	:= $(SRCS:$(SRCS_PATH)/%.c=$(OBJS_PATH)/%.o)
 

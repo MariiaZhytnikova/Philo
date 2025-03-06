@@ -6,28 +6,29 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/25 11:03:57 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/05 10:31:45 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-size_t	get_current_time(void)
+static void	set_death(t_data *data)
 {
-	struct timeval	time;
-
-	if (gettimeofday(&time, NULL) == -1)
-		error_msg("gettimeofday() error");
-	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	pthread_mutex_lock(&data->dead_lock);
+	data->is_dead = true;
+	pthread_mutex_unlock(&data->dead_lock);
 }
 
-void	ft_usleep(size_t milliseconds)
+int	checker(t_data *data)
 {
-	size_t	start;
-
-	start = get_current_time();
-	while ((get_current_time() - start) < milliseconds)
-		usleep(100);
+	pthread_mutex_lock(&data->dead_lock);
+	if (data->is_dead == true)
+	{
+		pthread_mutex_unlock(&data->dead_lock);
+		return (0);
+	}
+	pthread_mutex_unlock(&data->dead_lock);
+	return (1);
 }
 
 int	meals_eaten(t_data *data)
@@ -37,9 +38,14 @@ int	meals_eaten(t_data *data)
 	i = 0;
 	while (i < data->ph_num)
 	{
+		pthread_mutex_lock(&data->dead_lock);
 		if (data->philos[i].meals_eaten < data->meals_num)
+		{
+			pthread_mutex_unlock(&data->dead_lock);
 			return (1);
+		}
 		i++;
+		pthread_mutex_unlock(&data->dead_lock);
 	}
 	return (0);
 }
@@ -51,27 +57,23 @@ void	*monitoring(void *param)
 	int		i;
 
 	data = (t_data *)param;
-	i = 0;
-	while (data->is_dead == false)
+	while (checker(data))
 	{
-		ft_usleep(10);
 		i = 0;
 		while (i < data->ph_num)
 		{
+			pthread_mutex_lock(&data->dead_lock);
 			elapse = get_current_time() - data->philos[i].time_last_meal;
-			//printf("at %zu for %d - elapse is: %zu\n", get_current_time() - data->ps_start, data->philos[i].id, elapse);
+			pthread_mutex_unlock(&data->dead_lock);
 			if (elapse > data->time_die)
 			{
 				write_msg("died\n", &data->philos[i]);
-				data->is_dead = true;
-				//return (release_forks(&data->philos[i]), NULL);
+				set_death(data);
 			}
-			if (data->meals_num != -1 && !meals_eaten(data))
-			{
-				data->is_dead = true;
-				//return (release_forks(&data->philos[i]), NULL);
-			}
+			if (data->meals_num > 0 && !meals_eaten(data))
+				set_death(data);
 			i++;
+			ft_usleep(5);
 		}
 	}
 	return (NULL);

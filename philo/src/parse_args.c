@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parce_args.c                                       :+:      :+:    :+:   */
+/*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:54:55 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/02/24 13:28:39 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/05 10:09:25 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,25 @@ static int	mini_atoi(const char *str)
 	return ((int)num);
 }
 
-static void	get_numbers(t_data *data, char **array)
+static int	get_numbers(t_data *data, char **array)
 {
+	int	time_die;
+	int	time_eat;
+	int	time_sleep;
+
+	time_die = mini_atoi(array[1]);
+	time_eat = mini_atoi(array[2]);
+	time_sleep = mini_atoi(array[3]);
 	data->ph_num = mini_atoi(array[0]);
-	data->time_die = mini_atoi(array[1]);
-	data->time_eat = mini_atoi(array[2]);
-	data->time_sleep = mini_atoi(array[3]);
 	if (array[4])
-	{
 		data->meals_num = mini_atoi(array[4]);
-	}
+	if (data->ph_num < 1 || time_die < 1 || time_eat < 1
+		|| time_sleep < 1 || data->meals_num < 0)
+		return (1);
+	data->time_die = (size_t)time_die;
+	data->time_eat = (size_t)time_eat;
+	data->time_sleep = (size_t)time_sleep;
+	return (0);
 }
 
 static char	*get_args(char **argv)
@@ -87,7 +96,7 @@ int	parce_args(t_data *data, char **argv)
 
 	str = get_args(argv);
 	if (!str)
-		return (error_msg(USAGE), 1);
+		return (error_msg("Wrong arguments"), 1);
 	args_num = word_count(str);
 	if (args_num != 4 && args_num != 5)
 		return (error_msg(USAGE), 1);
@@ -98,9 +107,7 @@ int	parce_args(t_data *data, char **argv)
 	if (!array[0])
 		return (free(str), free(array), 1);
 	free(str);
-	get_numbers(data, array);
-	if (data->ph_num < 1 || data->time_die < 1 || data->time_eat < 1
-		|| data->time_sleep < 1 || data->meals_num < 0)
+	if (get_numbers(data, array))
 		return (error_msg("Wrong arguments"), 1);
 	if (args_num == 4)
 		data->meals_num = -1;
