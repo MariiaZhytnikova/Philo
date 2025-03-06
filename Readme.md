@@ -1,48 +1,88 @@
-https://medium.com/@denaelgammal/dining-philosophers-problem-42-project-guide-mandatory-part-a20fb8dc530e
+## Philosophers 42 Project (with Bonus)
+
+### Overview
+
+The Philosophers project is an implementation of the classic dining philosophers problem using multithreading (or processes in bonus) in C. The goal of the project is to simulate philosophers sitting at a table, thinking, and eating. Philosophers need to pick up two forks (represented as mutexes in mandatory part or semaphores in bonus) to eat, and they must do so in a way that avoids deadlocks.
+
+### Usage
+
+To run the philosophers simulation, execute the following command:
+
+	./philo <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [<number_of_times_each_philosopher_must_eat>]
+
+Parameters:
+-    <number_of_philosophers>: The total number of philosophers in the simulation.
+-    <time_to_die>: The time in milliseconds that a philosopher can survive without eating before dying.
+-    <time_to_eat>: The time in milliseconds it takes for a philosopher to eat.
+-    <time_to_sleep>: The time in milliseconds a philosopher will sleep after eating.
+-    <number_of_times_each_philosopher_must_eat> (optional): The number of times each philosopher must eat. If not provided, philosophers will eat indefinitely.
+
+Example:
+
+	./philo 5 800 200 200 3
+
+This will run a simulation with 5 philosophers where each philosopher will eat 3 times, and the time parameters are set to 800ms to die, 200ms to eat, and 200ms to sleep.
+
+Output:
+
+	timestamp_in_ms 1 is thinking
+	timestamp_in_ms 2 is eating
+	timestamp_in_ms 3 is sleeping
+	timestamp_in_ms 4 is eating
+	timestamp_in_ms 5 is thinking
+	...
+	timestamp_in_ms 3 has died
+
+### Dataraces and dead lock check
+
 Threads:
-— DRD: Run with valgrind --tool=drd to check for data races.
-— Helgrind: Run with valgrind --tool=helgrind to find lock issues and potential deadlocks.
+- DRD: Run with valgrind to check for data races  
+  	--tool=drd
 
-Processes:
-- -fsanitize=thread
 
-Test cases:
-./philo 1 800 200 200	| one should die	*
-./philo 4 310 200 100	| one should die	*
-./philo 5 600 150 150	| no one should die
-./philo 5 800 200 200	| no one should die	*
-./philo 4 410 200 200 	| no one should die	*
-./philo 100 800 200 200	| no one should die
-./philo 105 800 200 200	| no one should die
-./philo 200 800 200 200	| no one should die -- dead bonus
-./philo 4 800 200 200	| no one should die
 
-./philo 4 410 200 200 12 |no one should die stop 12 meals
-./philo 5 800 200 200 7	 |no one should die stop 7 meals	8
-./philo 4 410 200 200 10 |no one should die stop 12 meals	8
-./philo 4 410 200 200 15 |no one should die stop 12 meals
 
-./philo 2 170 60 60 -->  Expected: Philosophers should survive if eating in time.
-./philo 2 150 60 60 --> Expected: Philosophers should survive if eating in time.
-./philo 5 210 100 100 --> Expected: Each philosopher will have a chance to eat at least once. -- No one die bonus
-./philo 5 310 200 100 --> Expected: One philo has no chance to eat before dying.
+- Helgrind: Run with valgrind to find lock issues and potential deadlocks and data races  
+ 	--tool=helgrind 
 
-/// Comment
+### Test cases:
+One should die:
 
-./philo 5 200 800000 200 | Long delay before eating again (checks starvation risk). 
+	./philo 1 800 200 200
+	./philo 4 310 200 100
+  
+No one should die:
+ 
+	./philo 5 600 150 150
+	./philo 5 800 200 200
+	./philo 4 410 200 200
+	./philo 100 800 200 200
+	./philo 105 800 200 200
+	./philo 200 800 200 200
+	./philo 4 800 200 200
+ 	./philo 2 170 60 60
+	./philo 2 150 60 60
 
-./philo 5 200 800 2000000 -->Expected: Runs for an extended period without issues. 
-		Philosophers **might die after 200ms** if they don’t eat in time.
-./philo 199 401 200 200 --> Expected: Large-scale simulation, no deadlocks / one die
+All philosophers have eaten the required number of times, no one should die
 
-./philo 199 401 200 200 0 --> Expected: Simulation starts and stops instantly. 
-	No philosopher should die as the execution stops immediately.
+	./philo 4 410 200 200 12
+	./philo 5 800 200 200 7
+	./philo 4 410 200 200 10
+	./philo 4 410 200 200 15
 
-./philo 5 800 800 800 --> Expected: Philosophers act in sync without deadlocks. 
-	**Might die** if the given times are insufficient for continuous eating.
+Each philosopher will have a chance to eat at least once / No one should die bonus (all forks in the middle of the table)
 
-./philo 5 60 60 60 --> Expected: somebody die
+	./philo 5 210 100 100
 
-**Maximum CPU load**, as philosophers constantly eat, think, 
-	and sleep. **Fast starvation likely**, as the times may be too short for 
-							sustained survival.
+Edge cases
+	A message announcing a philosopher died should be displayed no more than 10 ms after the actual death of the philosopher
+	
+ 	./philo 5 200 800000 200 
+	./philo 5 200 800 2000000
+
+Large-scale simulation, no deadlocks shouls occure and one philo dies
+ 
+	./philo 199 401 200 200
+No meals: one philo should die or as option error message
+
+	./philo 199 401 200 200 0
