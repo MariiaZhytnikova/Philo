@@ -83,6 +83,6 @@ Edge cases
 Large-scale simulation, no deadlocks shouls occure and one philo dies
  
 	./philo 199 401 200 200
-No meals: one philo should die or as option error message
+No meals: one philo should die or, as option, error message
 
 	./philo 199 401 200 200 0
