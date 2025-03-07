@@ -70,7 +70,7 @@ All philosophers have eaten the required number of times, no one should die
 	./philo 4 410 200 200 10
 	./philo 4 410 200 200 15
 
-Each philosopher will have a chance to eat at least once / No one should die bonus (all forks in the middle of the table)
+Each philosopher will have a chance to eat at least once
 
 	./philo 5 210 100 100
 
