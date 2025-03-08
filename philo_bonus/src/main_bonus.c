@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 16:54:38 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/07 19:00:26 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	error_msg(char *msg)
 	len = 0;
 	while (msg[len] != '\0')
 		len++;
-	write(2, "Error\n", 6);
 	write(2, msg, len);
 	write(2, "\n", 1);
 }
@@ -27,22 +26,32 @@ void	error_msg(char *msg)
 void	destroy(t_data *data)
 {
 	if (sem_close(data->forks))
-		error_msg("Semaphores close failed");
-	if (sem_close(data->print_lock))
-		error_msg("Semaphores close failed");
+		error_msg("Fork semaphores close failed");
 	if (sem_close(data->dead_lock))
-		error_msg("Semaphores close failed");
+		error_msg("Death semaphores close failed");
+	if (sem_close(data->done))
+		error_msg("Done semaphores close failed");
 	if (sem_unlink("/forks") == -1)
-		error_msg("Semaphores unlink failed");
-	if (sem_unlink("/print") == -1)
-		error_msg("Semaphores unlink failed");
+		error_msg("Fork semaphores unlink failed");
 	if (sem_unlink("/dead") == -1)
-		error_msg("Semaphores unlink failed");
-	free(data->philos);
-	free(data);
-	printf("     Cleaning done \n");
+		error_msg("Death semaphores unlink failed");
+	if (sem_unlink("/done") == -1)
+		error_msg("Done semaphores unlink failed");
+	if (data->philos)
+		free(data->philos);
+	if (data)
+		free(data);
 	printf("       ¯\\_(ツ)_/¯\n");
 	exit(0);
+}
+
+static void	one_philo(t_data *data)
+{
+	data->ps_start = get_current_time();
+	printf("%zu 1 is thinking\n", get_current_time() - data->ps_start);
+	printf("%zu 1 has taken a fork\n", get_current_time() - data->ps_start);
+	ft_usleep(data->time_die);
+	printf("%zu 1 died\n", get_current_time() - data->ps_start);
 }
 
 int	main(int argc, char **argv)
@@ -55,16 +64,11 @@ int	main(int argc, char **argv)
 		return (0);
 	if (parce_args(data, argv))
 		return (free(data), 1);
-	if (data->ph_num == 1)
-	{
-		data->ps_start = get_current_time();
-		printf("%zu 1 is thinking\n", get_current_time() - data->ps_start);
-		printf("%zu 1 has taken a fork\n", get_current_time() - data->ps_start);
-		ft_usleep(data->time_die);
-		printf("%zu 1 died\n", get_current_time() - data->ps_start);
-		return (free(data), 0);
-	}
-	data_init(data);
+	if (data->ph_num == 1 || data->meals_num == 0)
+		return (one_philo(data), free(data), 0);
+	if (data_init(data))
+		return (destroy(data), 1);
 	simulation(data);
+	destroy(data);
 	return (0);
 }

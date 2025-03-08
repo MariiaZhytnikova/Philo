@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 16:55:35 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/07 19:00:43 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/wait.h>
-# include <stdbool.h>
 # include <sys/time.h>
+# include <pthread.h>
 # include <signal.h>
 
 # define USAGE "./philo philo_number time_to_die time_to_eat time_to\
@@ -34,7 +34,7 @@ typedef struct s_philo
 	int			id;
 	int			meals_eaten;
 	size_t		time_last_meal;
-	bool		is_fool;
+	int			is_fool;
 	t_data		*data;
 }	t_philo;
 
@@ -48,9 +48,9 @@ typedef struct s_data
 	size_t		ps_start;
 	t_philo		*philos;
 	sem_t		*forks;
-	bool		is_dead;
+	pthread_t	observer;
 	sem_t		*dead_lock;
-	sem_t		*print_lock;
+	sem_t		*done;
 }	t_data;
 
 // Parce args
@@ -66,12 +66,10 @@ int		parce_args(t_data *data, char **argv);
 void	long_dream(t_philo *philo, int action);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
-
-//Threads
-void	data_init(t_data *data);
+void	*monitoring(void *param);
+int		data_init(t_data *data);
 void	simulation(t_data *data);
 
-void	checker(t_philo *philo);
 void	write_msg(char *msg, t_philo *philo);
 void	routine(t_philo *philo);
 void	destroy(t_data *data);
