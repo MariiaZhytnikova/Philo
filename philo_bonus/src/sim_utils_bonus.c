@@ -6,30 +6,11 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 16:13:11 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/07 19:01:18 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 16:31:48 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-
-void	long_dream(t_philo *philo, int action)
-{
-	int	sleep_time;
-	int	rest;
-
-	sleep_time = 5;
-	if (action == 0)
-		rest = philo->data->time_eat;
-	else
-		rest = philo->data->time_sleep;
-	while (rest > 0)
-	{
-		ft_usleep(sleep_time);
-		rest -= sleep_time;
-		if (rest < sleep_time)
-			sleep_time = rest;
-	}
-}
 
 size_t	get_current_time(void)
 {
@@ -71,9 +52,9 @@ void	*monitoring(void *param)
 		elapse = get_current_time() - philo->time_last_meal;
 		if (elapse > philo->data->time_die)
 		{
-			sem_post(philo->data->done);
 			printf("%zu %d %s", get_current_time() \
 					- philo->data->ps_start, philo->id, "died\n");
+			sem_post(philo->data->done);
 			return (NULL);
 		}
 		if (philo->data->meals_num > 0 && !meals_eaten(philo))

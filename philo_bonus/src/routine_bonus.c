@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 14:46:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/07 19:01:32 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 16:58:49 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,12 @@ void	write_msg(char *msg, t_philo *philo)
 
 static void	take_forks(t_philo *philo)
 {
+	sem_wait(philo->data->fifo);
 	sem_wait(philo->data->forks);
 	write_msg("has taken a fork\n", philo);
 	sem_wait(philo->data->forks);
 	write_msg("has taken a fork\n", philo);
+	sem_post(philo->data->fifo);
 }
 
 static void	have_meal(t_philo *philo)
@@ -38,7 +40,7 @@ static void	have_meal(t_philo *philo)
 	philo->time_last_meal = get_current_time();
 	philo->meals_eaten++;
 	sem_post(philo->data->dead_lock);
-	long_dream(philo, 0);
+	ft_usleep(philo->data->time_eat);
 	philo->is_fool = 1;
 	sem_post(philo->data->forks);
 	sem_post(philo->data->forks);
@@ -59,8 +61,6 @@ void	routine(t_philo *philo)
 	if (pthread_create(&philo->data->observer, NULL, monitoring, philo) != 0)
 		return (error_msg("Observer thread creation failed\n"));
 	pthread_detach(philo->data->observer);
-	if (!(philo->id % 2))
-		ft_usleep(50);
 	while (1)
 	{
 		if (philo->is_fool == 0)
@@ -68,7 +68,7 @@ void	routine(t_philo *philo)
 		if (philo->is_fool == 1)
 		{
 			write_msg("is sleeping\n", philo);
-			long_dream(philo, 1);
+			ft_usleep(philo->data->time_sleep);
 			philo->is_fool = 0;
 			write_msg("is thinking\n", philo);
 		}

@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/07 19:00:43 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 16:59:02 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_data
 	pthread_t	observer;
 	sem_t		*dead_lock;
 	sem_t		*done;
+	sem_t		*fifo;
 }	t_data;
 
 // Parce args
@@ -63,7 +64,6 @@ void	free_arr(char **arr);
 int		parce_args(t_data *data, char **argv);
 
 // Simulation utls
-void	long_dream(t_philo *philo, int action);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
 void	*monitoring(void *param);

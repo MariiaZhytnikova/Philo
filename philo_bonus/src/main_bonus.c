@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/07 19:00:26 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 17:00:00 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,15 @@ void	destroy(t_data *data)
 		error_msg("Death semaphores close failed");
 	if (sem_close(data->done))
 		error_msg("Done semaphores close failed");
+	if (sem_close(data->fifo))
+		error_msg("Done semaphores close failed");
 	if (sem_unlink("/forks") == -1)
 		error_msg("Fork semaphores unlink failed");
 	if (sem_unlink("/dead") == -1)
 		error_msg("Death semaphores unlink failed");
 	if (sem_unlink("/done") == -1)
+		error_msg("Done semaphores unlink failed");
+	if (sem_unlink("/fifo") == -1)
 		error_msg("Done semaphores unlink failed");
 	if (data->philos)
 		free(data->philos);

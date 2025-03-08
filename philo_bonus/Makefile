@@ -6,14 +6,14 @@
 #    By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/04 15:05:17 by mzhitnik          #+#    #+#              #
-#    Updated: 2025/03/05 11:43:50 by mzhitnik         ###   ########.fr        #
+#    Updated: 2025/03/08 16:13:40 by mzhitnik         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		:= philo_bonus
 
 CC = cc
-CFLAGS		:= -Wextra -Wall -Werror
+CFLAGS		:= -pthread -Wextra -Wall -Werror
 
 HEADERS		:= -I ./inc
 
