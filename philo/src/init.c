@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 11:17:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 10:18:54 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 11:40:38 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	assign_forks(t_philo *philo)
 	}
 }
 
-static void	forks_init(t_data *data)
+static int	forks_init(t_data *data)
 {
 	int	i;
 
@@ -38,9 +38,10 @@ static void	forks_init(t_data *data)
 	{
 		data->forks[i].fork_id = i + 1;
 		if (pthread_mutex_init(&data->forks[i].fork_lock, NULL) != 0)
-			return (error_msg("Fork mutex initialization failed\n"));
+			return (error_msg("Fork mutex initialization failed"), 1);
 		i++;
 	}
+	return (0);
 }
 
 static void	philo_init(t_data *data)
@@ -58,44 +59,26 @@ static void	philo_init(t_data *data)
 	}
 }
 
-void	data_init(t_data *data)
+int	data_init(t_data *data)
 {
 	data->ps_start = get_current_time();
-	data->philos = (t_philo *)ft_calloc(data->ph_num, sizeof(t_philo));
-	if (!data->philos)
-		return (error_msg("Philos array allocation failed\n"));
-	data->forks = (t_fork *)ft_calloc(data->ph_num, sizeof(t_fork));
-	if (!data->forks)
-		return (error_msg("Forks array allocation failed\n"));
-	forks_init(data);
+	if (forks_init(data))
+		return (1);
 	philo_init(data);
 	if (pthread_mutex_init(&data->print_lock, NULL) != 0)
-		return (error_msg("Write mutex initialization failed\n"));
+		return (error_msg("Write mutex initialization failed"), 1);
 	if (pthread_mutex_init(&data->dead_lock, NULL) != 0)
-		return (error_msg("Write mutex initialization failed\n"));
+		return (error_msg("Write mutex initialization failed"), 1);
+	return (0);
 }
 
-void	simulation_start(t_data *data)
+int	alloc(t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (i < data->ph_num)
-	{
-		if (pthread_create(&data->philos[i].thread, NULL, routine, \
-			&data->philos[i]) != 0)
-			return (error_msg("Philo thread creation failed\n"));
-		i++;
-	}
-	i = 0;
-	if (pthread_create(&data->observer, NULL, monitoring, data) != 0)
-		return (error_msg("Observer thread creation failed\n"));
-	while (i < data->ph_num)
-	{
-		if (pthread_join(data->philos[i].thread, NULL) != 0)
-			return (error_msg("Thread join failed\n"));
-		i++;
-	}
-	if (pthread_join(data->observer, NULL) != 0)
-		error_msg("Observer thread join failed\n");
+	data->philos = (t_philo *)ft_calloc(data->ph_num, sizeof(t_philo));
+	if (!data->philos)
+		return (error_msg("Philos array allocation failed"), 1);
+	data->forks = (t_fork *)ft_calloc(data->ph_num, sizeof(t_fork));
+	if (!data->forks)
+		return (free(data->philos), error_msg("Array allocation failed"), 1);
+	return (0);
 }

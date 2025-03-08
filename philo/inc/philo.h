@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 10:18:46 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/06 15:57:22 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,21 +65,22 @@ char	*ft_strjoin(char *s1, char *s2);
 size_t	word_count(char *str);
 void	split_args(char **res, char *args, int k);
 
-//Errors and frees
+// Errors and frees
 void	error_msg(char *msg);
 void	free_arr(char **arr);
 
 // Parce args
 int		parce_args(t_data *data, char **argv);
 
-// Simulation utls
+// Simulation utils
+int		alloc(t_data *data);
+int		data_init(t_data *data);
 int		checker(t_data *data);
 void	long_dream(t_philo *philo, int action);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
 
 //Threads
-void	data_init(t_data *data);
 void	write_msg(char *msg, t_philo *philo);
 void	release_forks(t_philo *philo);
 void	*monitoring(void *param);

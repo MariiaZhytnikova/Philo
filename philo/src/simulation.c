@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 10:31:45 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/06 15:51:33 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,29 @@ void	*monitoring(void *param)
 		}
 	}
 	return (NULL);
+}
+
+void	simulation_start(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->ph_num)
+	{
+		if (pthread_create(&data->philos[i].thread, NULL, routine, \
+			&data->philos[i]) != 0)
+			return (error_msg("Philo thread creation failed\n"));
+		i++;
+	}
+	i = 0;
+	if (pthread_create(&data->observer, NULL, monitoring, data) != 0)
+		return (error_msg("Observer thread creation failed\n"));
+	while (i < data->ph_num)
+	{
+		if (pthread_join(data->philos[i].thread, NULL) != 0)
+			return (error_msg("Thread join failed\n"));
+		i++;
+	}
+	if (pthread_join(data->observer, NULL) != 0)
+		error_msg("Observer thread join failed\n");
 }

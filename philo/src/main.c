@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/06 10:27:03 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 11:42:24 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	error_msg(char *msg)
 	write(2, "\n", 1);
 }
 
-void	destroy(t_data *data)
+static void	destroy(t_data *data)
 {
 	int	i;
 
@@ -36,9 +36,21 @@ void	destroy(t_data *data)
 		pthread_mutex_destroy(&data->forks[i].fork_lock);
 		i++;
 	}
-	free(data->forks);
-	free(data->philos);
+	if (data->forks)
+		free(data->forks);
+	if (data->philos)
+		free(data->philos);
 	free(data);
+	printf("       ¯\\_(ツ)_/¯\n");
+}
+
+static void	one_philo(t_data *data)
+{
+	data->ps_start = get_current_time();
+	printf("%zu 1 is thinking\n", get_current_time() - data->ps_start);
+	printf("%zu 1 has taken a fork\n", get_current_time() - data->ps_start);
+	ft_usleep(data->time_die);
+	printf("%zu 1 died\n", get_current_time() - data->ps_start);
 	printf("       ¯\\_(ツ)_/¯\n");
 }
 
@@ -50,19 +62,15 @@ int	main(int argc, char **argv)
 		return (error_msg(USAGE), 0);
 	data = (t_data *)ft_calloc(1, sizeof(t_data));
 	if (!data)
-		return (0);
+		return (1);
 	if (parce_args(data, argv))
 		return (free(data), 1);
 	if (data->ph_num == 1)
-	{
-		data->ps_start = get_current_time();
-		printf("%zu 1 is thinking\n", get_current_time() - data->ps_start);
-		printf("%zu 1 has taken a fork\n", get_current_time() - data->ps_start);
-		ft_usleep(data->time_die);
-		printf("%zu 1 died\n", get_current_time() - data->ps_start);
-		return (free(data), 0);
-	}
-	data_init(data);
+		return (one_philo(data), free(data), 0);
+	if (alloc(data))
+		return (free(data), 1);
+	if (data_init(data))
+		return (destroy(data), 1);
 	simulation_start(data);
 	destroy(data);
 	return (0);
