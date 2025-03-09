@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 17:09:52 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 18:16:01 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,6 @@ int	data_init(t_data *data)
 {
 	int	i;
 
-	data->philos = (t_philo *)ft_calloc(data->ph_num, sizeof(t_philo));
-	if (!data->philos)
-		return (1);
 	data->ps_start = get_current_time();
 	if (semaphores(data))
 		return (1);

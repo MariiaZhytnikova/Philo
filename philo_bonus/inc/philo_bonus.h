@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 16:59:02 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 18:05:01 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ size_t	word_count(char *str);
 void	split_args(char **res, char *args, int k);
 void	error_msg(char *msg);
 void	free_arr(char **arr);
-int		parce_args(t_data *data, char **argv);
+int		parse_args(t_data *data, char **argv);
 
 // Simulation utls
 size_t	get_current_time(void);

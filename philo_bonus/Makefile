@@ -22,7 +22,7 @@ OBJS_PATH	:= ./obj
 
 SRCS := $(SRCS_PATH)/main_bonus.c \
 		$(SRCS_PATH)/utils_bonus.c \
-		$(SRCS_PATH)/parce_args_bonus.c \
+		$(SRCS_PATH)/parse_args_bonus.c \
 		$(SRCS_PATH)/sim_utils_bonus.c \
 		$(SRCS_PATH)/simulation_bonus.c \
 		$(SRCS_PATH)/routine_bonus.c

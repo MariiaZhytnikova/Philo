@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parce_args_bonus.c                                 :+:      :+:    :+:   */
+/*   parse_args_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 14:54:55 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/05 16:54:50 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 18:22:37 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,21 @@ static int	get_numbers(t_data *data, char **array)
 	return (0);
 }
 
+static int	str_check(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!(str[i] >= '0' && str[i] <= '9') && str[i] != ' '
+			&& str[i] != '+')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 static char	*get_args(char **argv)
 {
 	int		i;
@@ -71,24 +86,22 @@ static char	*get_args(char **argv)
 	while (argv[i])
 	{
 		temp = ft_strjoin(str, argv[i++]);
+		if (!temp)
+			return (NULL);
 		free(str);
 		str = temp;
 		temp = ft_strjoin(str, " ");
+		if (!temp)
+			return (free(str), NULL);
 		free(str);
 		str = temp;
 	}
-	i = 0;
-	while (str[i])
-	{
-		if (!(str[i] >= '0' && str[i] <= '9') && str[i] != ' '
-			&& str[i] != '+')
-			return (free(str), NULL);
-		i++;
-	}
+	if (str_check(str))
+		return (free(str), NULL);
 	return (str);
 }
 
-int	parce_args(t_data *data, char **argv)
+int	parse_args(t_data *data, char **argv)
 {
 	char	*str;
 	char	**array;
@@ -96,16 +109,16 @@ int	parce_args(t_data *data, char **argv)
 
 	str = get_args(argv);
 	if (!str)
-		return (error_msg("Wrong arguments"), 1);
+		return (error_msg("Something wrong"), 1);
 	args_num = word_count(str);
 	if (args_num != 4 && args_num != 5)
 		return (error_msg(USAGE), 1);
 	array = (char **)ft_calloc(args_num + 1, sizeof(char *));
 	if (!array)
-		return (free(str), 1);
+		return (error_msg("Something wrong"), free(str), 1);
 	split_args(array, str, 0);
-	if (!array[0])
-		return (free(str), free(array), 1);
+	if (!array || !array[0])
+		return (error_msg("Error"), free(str), free(array), 1);
 	free(str);
 	if (get_numbers(data, array))
 		return (error_msg("Wrong arguments"), 1);

@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 17:00:00 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/03/08 18:18:24 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,19 @@ int	main(int argc, char **argv)
 {
 	t_data	*data;
 
-	(void)argc;
+	if (argc < 2)
+		return (error_msg(USAGE), 1);
 	data = (t_data *)ft_calloc(1, sizeof(t_data));
 	if (!data)
-		return (0);
-	if (parce_args(data, argv))
+		return (error_msg("Something wrong"), 1);
+	if (parse_args(data, argv))
 		return (free(data), 1);
+	data->philos = (t_philo *)ft_calloc(data->ph_num, sizeof(t_philo));
+	if (!data->philos)
+		return (error_msg("Something wrong"), 1);
 	if (data->ph_num == 1 || data->meals_num == 0)
-		return (one_philo(data), free(data), 0);
-	if (data_init(data))
+		return (one_philo(data), free(data), 1);
+	if (data_init(data) == 1)
 		return (destroy(data), 1);
 	simulation(data);
 	destroy(data);
