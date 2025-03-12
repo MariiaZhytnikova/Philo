@@ -50,6 +50,7 @@ One should die:
 
 	./philo 1 800 200 200
 	./philo 4 310 200 100
+ 	./philo 2 800 700 90 1
   
 No one should die:
  
@@ -62,6 +63,12 @@ No one should die:
 	./philo 4 800 200 200
  	./philo 2 170 60 60
 	./philo 2 150 60 60
+ 	./philo 3 190 60 60
+ 	./philo 4 405 200 200
+ 	./philo 4 130 60 60
+	./philo 100 410 200 200
+	./philo 100 130 60 60
+ 	./philo 101 179 60 60 
 
 All philosophers have eaten the required number of times, no one should die
 
