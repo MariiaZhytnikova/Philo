@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/06 15:57:22 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/13 14:09:55 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_philo
 	t_fork			*fork_two;
 	int				meals_eaten;
 	size_t			time_last_meal;
+	size_t			time_next_meal;
 	bool			is_fool;
 	t_data			*data;
 }	t_philo;
@@ -79,10 +80,10 @@ int		checker(t_data *data);
 void	long_dream(t_philo *philo, int action);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
+void	sim_start(size_t time);
 
 //Threads
 void	write_msg(char *msg, t_philo *philo);
-void	release_forks(t_philo *philo);
 void	*monitoring(void *param);
 void	*routine(void *param);
 void	simulation_start(t_data *data);

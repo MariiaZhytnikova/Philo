@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:54:47 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 18:05:01 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/23 09:49:28 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_philo
 	int			meals_eaten;
 	size_t		time_last_meal;
 	int			is_fool;
+	pthread_t	observer;
 	t_data		*data;
 }	t_philo;
 
@@ -48,7 +49,6 @@ typedef struct s_data
 	size_t		ps_start;
 	t_philo		*philos;
 	sem_t		*forks;
-	pthread_t	observer;
 	sem_t		*dead_lock;
 	sem_t		*done;
 	sem_t		*fifo;
@@ -67,8 +67,14 @@ int		parse_args(t_data *data, char **argv);
 size_t	get_current_time(void);
 void	ft_usleep(size_t milliseconds);
 void	*monitoring(void *param);
+
+int		semaphores(t_data *data);
+int		semaphores_two(t_data *data);
 int		data_init(t_data *data);
 void	simulation(t_data *data);
+
+int		meals_eaten(t_philo *philo);
+void	rip(t_philo *philo);
 
 void	write_msg(char *msg, t_philo *philo);
 void	routine(t_philo *philo);

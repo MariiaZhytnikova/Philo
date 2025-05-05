@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 17:53:36 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 17:40:54 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/13 12:18:55 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,6 @@ static void	destroy(t_data *data)
 	printf("       ¯\\_(ツ)_/¯\n");
 }
 
-static void	one_philo(t_data *data)
-{
-	data->ps_start = get_current_time();
-	printf("%zu 1 is thinking\n", get_current_time() - data->ps_start);
-	printf("%zu 1 has taken a fork\n", get_current_time() - data->ps_start);
-	ft_usleep(data->time_die);
-	printf("%zu 1 died\n", get_current_time() - data->ps_start);
-	printf("       ¯\\_(ツ)_/¯\n");
-}
-
 int	main(int argc, char **argv)
 {
 	t_data	*data;
@@ -65,8 +55,6 @@ int	main(int argc, char **argv)
 		return (1);
 	if (parce_args(data, argv))
 		return (free(data), 1);
-	if (data->ph_num == 1)
-		return (one_philo(data), free(data), 0);
 	if (alloc(data))
 		return (free(data), 1);
 	if (data_init(data))

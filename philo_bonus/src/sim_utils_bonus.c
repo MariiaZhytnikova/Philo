@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 16:13:11 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 16:31:48 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/23 09:51:46 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	ft_usleep(size_t milliseconds)
 
 int	meals_eaten(t_philo *philo)
 {
-	if (philo->meals_eaten - 1 < philo->data->meals_num)
+	if (philo->meals_eaten < philo->data->meals_num)
 	{
 		sem_post(philo->data->dead_lock);
 		return (1);
@@ -40,30 +40,34 @@ int	meals_eaten(t_philo *philo)
 	return (0);
 }
 
-void	*monitoring(void *param)
+int	data_init(t_data *data)
 {
-	t_philo	*philo;
-	size_t	elapse;
+	int	i;
 
-	philo = (t_philo *)param;
-	while (1)
+	data->ps_start = get_current_time();
+	if (semaphores(data))
+		return (1);
+	i = 0;
+	while (i < data->ph_num)
 	{
-		sem_wait(philo->data->dead_lock);
-		elapse = get_current_time() - philo->time_last_meal;
-		if (elapse > philo->data->time_die)
-		{
-			printf("%zu %d %s", get_current_time() \
-					- philo->data->ps_start, philo->id, "died\n");
-			sem_post(philo->data->done);
-			return (NULL);
-		}
-		if (philo->data->meals_num > 0 && !meals_eaten(philo))
-		{
-			sem_post(philo->data->done);
-			return (NULL);
-		}
-		sem_post(philo->data->dead_lock);
-		ft_usleep (5);
+		data->philos[i].time_last_meal = data->ps_start;
+		data->philos[i].data = data;
+		data->philos[i].id = i + 1;
+		i++;
 	}
-	return (NULL);
+	return (0);
+}
+
+void	rip(t_philo *philo)
+{
+	int	i;
+
+	i = 0;
+	printf("%zu %d %s", get_current_time()
+		- philo->data->ps_start, philo->id, "died\n");
+	while (i < philo->data->ph_num)
+	{
+		sem_post(philo->data->done);
+		i++;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 14:46:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 14:21:46 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/13 13:56:49 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,24 +27,10 @@ void	write_msg(char *msg, t_philo *philo)
 
 static void	take_forks(t_philo *philo)
 {
-	if (philo->fork_one)
-	{
-		pthread_mutex_lock(&philo->fork_one->fork_lock);
-		write_msg("has taken a fork\n", philo);
-	}
-	if (philo->fork_two)
-	{
-		pthread_mutex_lock(&philo->fork_two->fork_lock);
-		write_msg("has taken a fork\n", philo);
-	}
-}
-
-void	release_forks(t_philo *philo)
-{
-	if (philo->fork_one)
-		pthread_mutex_unlock(&philo->fork_one->fork_lock);
-	if (philo->fork_two)
-		pthread_mutex_unlock(&philo->fork_two->fork_lock);
+	pthread_mutex_lock(&philo->fork_one->fork_lock);
+	write_msg("has taken a fork\n", philo);
+	pthread_mutex_lock(&philo->fork_two->fork_lock);
+	write_msg("has taken a fork\n", philo);
 }
 
 static void	have_meal(t_philo *philo)
@@ -57,28 +43,41 @@ static void	have_meal(t_philo *philo)
 		philo->time_last_meal = get_current_time();
 		philo->meals_eaten++;
 		pthread_mutex_unlock(&philo->data->dead_lock);
+		philo->time_next_meal = philo->time_last_meal
+			+ philo->data->time_eat * 2 + 1;
 		philo->is_fool = true;
 		long_dream(philo, 0);
 	}
-	release_forks(philo);
+	pthread_mutex_unlock(&philo->fork_one->fork_lock);
+	pthread_mutex_unlock(&philo->fork_two->fork_lock);
 }
 
-void	*routine(void *param)
+static int	one(t_philo *philo)
+{
+	if (philo->data->ph_num == 1 || philo->data->meals_num == 0)
+	{
+		write_msg("is thinking\n", philo);
+		ft_usleep(philo->data->time_die);
+		return (1);
+	}
+	return (-1);
+}
+
+void	*routine(void *param) //./philo 3 190 60 60
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)param;
-	if (philo->data->meals_num == 0)
-	{
-		{
-			write_msg("is thinking\n", philo);
-			return (ft_usleep(philo->data->time_die), NULL);
-		}
-	}
-	if (philo->id % 2)
+	sim_start(philo->data->ps_start);
+	if (one(philo) > 0)
+		return (NULL);
+	if (philo->id % 2 == 1)
 		ft_usleep(10);
 	while (checker(philo->data))
 	{
+		if (philo->time_next_meal - get_current_time() > 0)
+			ft_usleep(philo->time_next_meal - get_current_time()
+				&& philo->id % 2 == 1);
 		if (philo->is_fool == false && checker(philo->data))
 			have_meal(philo);
 		if (philo->is_fool == true && checker(philo->data))

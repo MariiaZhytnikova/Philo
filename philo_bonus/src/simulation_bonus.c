@@ -6,13 +6,13 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 18:16:01 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/23 09:52:11 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static int	semaphores_two(t_data *data)
+int	semaphores_two(t_data *data)
 {
 	data->dead_lock = sem_open("/dead", O_CREAT | O_EXCL, 0666, 1);
 	if (data->dead_lock == SEM_FAILED)
@@ -22,18 +22,18 @@ static int	semaphores_two(t_data *data)
 		if (data->dead_lock == SEM_FAILED)
 			return (error_msg("Semaphores open failed\n"), 1);
 	}
-	data->done = sem_open("/done", O_CREAT | O_EXCL, 0666, 1);
+	data->done = sem_open("/done", O_CREAT | O_EXCL, 0666, 0);
 	if (data->done == SEM_FAILED)
 	{
 		sem_unlink("/done");
-		data->done = sem_open("/done", O_CREAT | O_EXCL, 0666, 1);
+		data->done = sem_open("/done", O_CREAT | O_EXCL, 0666, 0);
 		if (data->done == SEM_FAILED)
 			return (error_msg("Semaphores open failed\n"), 1);
 	}
 	return (0);
 }
 
-static int	semaphores(t_data *data)
+int	semaphores(t_data *data)
 {
 	data->forks = sem_open("/forks", O_CREAT | O_EXCL, 0666, data->ph_num);
 	if (data->forks == SEM_FAILED)
@@ -56,56 +56,53 @@ static int	semaphores(t_data *data)
 	return (0);
 }
 
-int	data_init(t_data *data)
-{
-	int	i;
-
-	data->ps_start = get_current_time();
-	if (semaphores(data))
-		return (1);
-	i = 0;
-	while (i < data->ph_num)
-	{
-		data->philos[i].time_last_meal = data->ps_start;
-		data->philos[i].data = data;
-		data->philos[i].id = i + 1;
-		i++;
-	}
-	return (0);
-}
-
 void	parent(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	sem_wait(data->done);
-	sem_wait(data->done);
+	while (i++ < data->ph_num)
+		sem_wait(data->done);
+	i = 0;
 	while (i < data->ph_num)
 	{
-		kill(data->philos[i].pid, SIGTERM);
+		if (kill(data->philos[i].pid, 0) == 0)
+		{
+			kill(data->philos[i].pid, SIGKILL);
+			wait(NULL);
+		}
 		i++;
 	}
 }
 
+void	child(t_data *data, int i)
+{
+	if (pthread_create(&data->philos[i].observer, NULL,
+			monitoring, &data->philos[i]) != 0)
+	{
+		error_msg("Observer thread creation failed\n");
+		sem_post(data->done);
+	}
+	pthread_detach(data->philos[i].observer);
+	routine(&data->philos[i]);
+	exit(0);
+}
+
 void	simulation(t_data *data)
 {
-	pid_t	pid;
 	int		i;
 
 	i = 0;
 	while (i < data->ph_num)
 	{
-		pid = fork();
-		if (pid == -1)
-			return (error_msg("Fork open failed\n"));
-		if (pid == 0)
+		data->philos[i].pid = fork();
+		if (data->philos[i].pid == -1)
 		{
-			routine(&data->philos[i]);
-			exit(0);
+			sem_post(data->done);
+			return (error_msg("Fork open failed\n"));
 		}
-		else
-			data->philos[i].pid = pid;
+		if (data->philos[i].pid == 0)
+			child(data, i);
 		i++;
 	}
 	parent(data);

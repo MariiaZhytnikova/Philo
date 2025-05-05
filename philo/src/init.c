@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 11:17:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 17:40:18 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/13 13:44:17 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ static void	philo_init(t_data *data)
 	while (i < data->ph_num)
 	{
 		data->philos[i].id = i + 1;
-		data->philos[i].time_last_meal = get_current_time();
+		data->philos[i].time_last_meal = data->ps_start;
+		data->philos[i].time_next_meal = data->ps_start;
 		data->philos[i].data = data;
 		assign_forks(&data->philos[i]);
 		i++;
@@ -61,7 +62,7 @@ static void	philo_init(t_data *data)
 
 int	data_init(t_data *data)
 {
-	data->ps_start = get_current_time();
+	data->ps_start = get_current_time() + 10;
 	if (forks_init(data))
 		return (1);
 	philo_init(data);

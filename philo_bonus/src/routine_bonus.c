@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 14:46:05 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 16:58:49 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/23 09:51:16 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,21 +46,13 @@ static void	have_meal(t_philo *philo)
 	sem_post(philo->data->forks);
 }
 
-static void	one_meal(t_philo *philo)
-{
-	write_msg("is thinking\n", philo);
-	take_forks(philo);
-	ft_usleep(philo->data->time_die);
-	exit(1);
-}
-
 void	routine(t_philo *philo)
 {
-	if (philo->data->meals_num == 0)
-		one_meal(philo);
-	if (pthread_create(&philo->data->observer, NULL, monitoring, philo) != 0)
-		return (error_msg("Observer thread creation failed\n"));
-	pthread_detach(philo->data->observer);
+	if (philo->data->ph_num == 1 || philo->data->meals_num == 0)
+	{
+		write_msg("is thinking\n", philo);
+		ft_usleep(philo->data->time_die * 2);
+	}
 	while (1)
 	{
 		if (philo->is_fool == 0)
@@ -73,4 +65,30 @@ void	routine(t_philo *philo)
 			write_msg("is thinking\n", philo);
 		}
 	}
+}
+
+void	*monitoring(void *param)
+{
+	t_philo	*philo;
+	size_t	elapse;
+
+	philo = (t_philo *)param;
+	while (1)
+	{
+		sem_wait(philo->data->dead_lock);
+		elapse = get_current_time() - philo->time_last_meal;
+		if (elapse > philo->data->time_die)
+		{
+			rip(philo);
+			return (NULL);
+		}
+		if (philo->data->meals_num > 0 && !meals_eaten(philo))
+		{
+			sem_post(philo->data->done);
+			return (NULL);
+		}
+		sem_post(philo->data->dead_lock);
+		ft_usleep (5);
+	}
+	return (NULL);
 }

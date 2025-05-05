@@ -6,11 +6,19 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 10:51:39 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/03/08 13:50:35 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/04/13 13:43:56 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	sim_start(size_t time)
+{
+	while (get_current_time() < time)
+	{
+		ft_usleep(10);
+	}
+}
 
 void	long_dream(t_philo *philo, int action)
 {
@@ -50,4 +58,16 @@ void	ft_usleep(size_t milliseconds)
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
 		usleep(200);
+}
+
+int	checker(t_data *data)
+{
+	pthread_mutex_lock(&data->dead_lock);
+	if (data->is_dead == true)
+	{
+		pthread_mutex_unlock(&data->dead_lock);
+		return (0);
+	}
+	pthread_mutex_unlock(&data->dead_lock);
+	return (1);
 }
