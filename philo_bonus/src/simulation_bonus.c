@@ -6,7 +6,7 @@
 /*   By: mzhitnik <mzhitnik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 09:31:56 by mzhitnik          #+#    #+#             */
-/*   Updated: 2025/04/23 09:52:11 by mzhitnik         ###   ########.fr       */
+/*   Updated: 2025/05/12 10:16:38 by mzhitnik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,15 @@ void	parent(t_data *data)
 
 void	child(t_data *data, int i)
 {
+	int	k;
+
+	k = 0;
 	if (pthread_create(&data->philos[i].observer, NULL,
 			monitoring, &data->philos[i]) != 0)
 	{
 		error_msg("Observer thread creation failed\n");
-		sem_post(data->done);
+		while (k++ < data->ph_num)
+			sem_post(data->done);
 	}
 	pthread_detach(data->philos[i].observer);
 	routine(&data->philos[i]);
