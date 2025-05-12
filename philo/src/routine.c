@@ -75,9 +75,8 @@ void	*routine(void *param) //./philo 3 190 60 60
 		ft_usleep(10);
 	while (checker(philo->data))
 	{
-		if (philo->time_next_meal - get_current_time() > 0)
-			ft_usleep(philo->time_next_meal - get_current_time()
-				&& philo->id % 2 == 1);
+		if (philo->time_next_meal - get_current_time() > 0 && philo->id % 2 == 1)
+			ft_usleep(philo->time_next_meal - get_current_time());
 		if (philo->is_fool == false && checker(philo->data))
 			have_meal(philo);
 		if (philo->is_fool == true && checker(philo->data))
