@@ -44,7 +44,7 @@ static void	have_meal(t_philo *philo)
 		philo->meals_eaten++;
 		pthread_mutex_unlock(&philo->data->dead_lock);
 		philo->time_next_meal = philo->time_last_meal
-			+ philo->data->time_eat + philo->data->time_sleep;
+			+ philo->data->time_eat * 2 + 1;
 		philo->is_fool = true;
 		long_dream(philo, 0);
 	}
@@ -78,7 +78,7 @@ void	*routine(void *param)
 	{
 		delay = philo->time_next_meal - get_current_time();
 		if (delay > 0 && philo->id % 2 == 1)
-			long_dream(philo, delay - 1);
+			ft_usleep(1);
 		if (philo->is_fool == false && checker(philo->data))
 			have_meal(philo);
 		if (philo->is_fool == true && checker(philo->data))
